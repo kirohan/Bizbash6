@@ -66,3 +66,8 @@ The bundled soundtrack is configured to request playback automatically on every 
 
 ### Soundtrack autoplay note
 The page requests audible autoplay immediately. Chrome, Edge, Safari, and mobile browsers may block audible audio on a user's first visit by policy. If that happens, the first click/tap/key interaction anywhere on the page unlocks and starts the soundtrack automatically; the visitor does not need to press the soundtrack button.
+
+
+V6 updates:
+- Removed the visible gradient glow from the evidence-board background in the hero section.
+- Aligned the footer slogan with the KUET Career Club logo for a cleaner desktop footer.
