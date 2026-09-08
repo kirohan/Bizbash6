@@ -62,3 +62,7 @@ Event organized by **KUET Career Club**.
 
 ### Soundtrack autoplay
 The bundled soundtrack is configured to request playback automatically on every visit and refresh. Modern browsers can still block audible autoplay; when that happens, the site starts it on the visitor’s first interaction anywhere on the page.
+
+
+### Soundtrack autoplay note
+The page requests audible autoplay immediately. Chrome, Edge, Safari, and mobile browsers may block audible audio on a user's first visit by policy. If that happens, the first click/tap/key interaction anywhere on the page unlocks and starts the soundtrack automatically; the visitor does not need to press the soundtrack button.

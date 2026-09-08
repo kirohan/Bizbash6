@@ -35,14 +35,14 @@ const observer = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
 // BizBash soundtrack — user-provided local audio asset.
-// Autoplay is requested immediately on every visit/refresh. Some browsers may still
-// block audible autoplay by policy; in that case playback begins on the visitor's
-// first interaction anywhere on the page.
+// We request audible autoplay immediately. Modern browsers can block first-visit
+// audible autoplay at browser level; when that happens, ANY normal user gesture
+// on the page (not specifically the music button) unlocks playback automatically.
 const musicToggle = document.getElementById('musicToggle');
 const soundtrackAudio = document.getElementById('soundtrackAudio');
 let soundtrackPlaying = false;
 let userPausedSoundtrack = false;
-let autoplayFallbackArmed = false;
+let unlockArmed = false;
 
 function updateSoundtrackButton(playing){
   soundtrackPlaying = playing;
@@ -54,27 +54,28 @@ function updateSoundtrackButton(playing){
   if(icon) icon.textContent = playing ? 'Ⅱ' : '♪';
 }
 
-function removeAutoplayFallback(){
-  if(!autoplayFallbackArmed) return;
-  autoplayFallbackArmed = false;
-  ['pointerdown','touchstart','keydown'].forEach(type =>
-    document.removeEventListener(type, unlockAutoplay, true)
+function disarmUnlock(){
+  if(!unlockArmed) return;
+  unlockArmed = false;
+  ['pointerup','click','touchend','keydown'].forEach(type =>
+    document.removeEventListener(type, unlockOnGesture, true)
   );
 }
 
 async function playSoundtrack({fromAutoplay = false} = {}){
-  if(!soundtrackAudio) return false;
+  if(!soundtrackAudio || userPausedSoundtrack) return false;
+  soundtrackAudio.loop = true;
   soundtrackAudio.volume = 0.38;
+  soundtrackAudio.muted = false;
   try{
     await soundtrackAudio.play();
-    userPausedSoundtrack = false;
     updateSoundtrackButton(true);
-    removeAutoplayFallback();
+    disarmUnlock();
+    try{ localStorage.setItem('bizbashSound', 'on'); }catch(_){}
     return true;
   }catch(err){
     updateSoundtrackButton(false);
-    if(fromAutoplay) armAutoplayFallback();
-    console.warn('Audible autoplay was blocked by the browser; waiting for the first page interaction.', err);
+    if(fromAutoplay) armUnlock();
     return false;
   }
 }
@@ -82,21 +83,28 @@ async function playSoundtrack({fromAutoplay = false} = {}){
 function pauseSoundtrack(){
   if(!soundtrackAudio) return;
   userPausedSoundtrack = true;
-  removeAutoplayFallback();
+  disarmUnlock();
   soundtrackAudio.pause();
   updateSoundtrackButton(false);
+  try{ localStorage.setItem('bizbashSound', 'off'); }catch(_){}
 }
 
-async function unlockAutoplay(){
-  if(userPausedSoundtrack || soundtrackPlaying) return;
-  await playSoundtrack();
+async function unlockOnGesture(){
+  if(userPausedSoundtrack || soundtrackPlaying) {
+    disarmUnlock();
+    return;
+  }
+  const ok = await playSoundtrack();
+  if(ok) disarmUnlock();
 }
 
-function armAutoplayFallback(){
-  if(autoplayFallbackArmed || userPausedSoundtrack || soundtrackPlaying) return;
-  autoplayFallbackArmed = true;
-  ['pointerdown','touchstart','keydown'].forEach(type =>
-    document.addEventListener(type, unlockAutoplay, {capture:true, once:true})
+function armUnlock(){
+  if(unlockArmed || userPausedSoundtrack || soundtrackPlaying) return;
+  unlockArmed = true;
+  // Use gesture events that browsers recognize as user activation. Keep all
+  // listeners until playback actually succeeds rather than consuming one early.
+  ['pointerup','click','touchend','keydown'].forEach(type =>
+    document.addEventListener(type, unlockOnGesture, true)
   );
 }
 
@@ -105,7 +113,9 @@ function attemptAutoplay(){
   playSoundtrack({fromAutoplay:true});
 }
 
-musicToggle?.addEventListener('click', () => {
+musicToggle?.addEventListener('click', (event) => {
+  // Prevent the global unlock listener from racing this explicit control.
+  event.stopPropagation();
   if(soundtrackPlaying) pauseSoundtrack();
   else {
     userPausedSoundtrack = false;
@@ -116,7 +126,16 @@ musicToggle?.addEventListener('click', () => {
 soundtrackAudio?.addEventListener('play', () => updateSoundtrackButton(true));
 soundtrackAudio?.addEventListener('pause', () => updateSoundtrackButton(false));
 
-// Try as soon as the document is ready, and again when restored/revisited via bfcache.
-if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attemptAutoplay, {once:true});
-else attemptAutoplay();
+// Ask the browser for autoplay at the earliest useful moments.
+if(document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', attemptAutoplay, {once:true});
+} else {
+  attemptAutoplay();
+}
+window.addEventListener('load', attemptAutoplay, {once:true});
 window.addEventListener('pageshow', attemptAutoplay);
+
+// If the browser blocks first-visit audible autoplay, this ensures the first
+// click/tap/key anywhere on the website starts it without requiring PLAY MUSIC.
+armUnlock();
+

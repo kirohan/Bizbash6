@@ -128,3 +128,22 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradi
   .header-soundtrack .music-copy{display:none}
   .menu-toggle{margin-left:0}
 }
+
+
+/* ===== V5: studio credit cleanup + resilient soundtrack unlock ===== */
+.footer .studio-credit,
+.footer .studio-credit:link,
+.footer .studio-credit:visited,
+.footer .studio-credit:hover,
+.footer .studio-credit:active,
+.footer .studio-credit strong {
+  color:#f2e8d2 !important;
+  text-decoration:none !important;
+  text-decoration-line:none !important;
+  border-bottom:0 !important;
+  box-shadow:none !important;
+  background-image:none !important;
+  background:none !important;
+}
+.footer .studio-credit:hover,
+.footer .studio-credit:hover strong { color:#fff !important; }
