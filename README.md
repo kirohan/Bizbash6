@@ -58,3 +58,7 @@ Event organized by **KUET Career Club**.
 - KCC logo is used with transparency.
 - The browser favicon is generated from the KCC emblem.
 - Soundtrack file: `assets/bizbash-soundtrack.mp3`.
+
+
+### Soundtrack autoplay
+The bundled soundtrack is configured to request playback automatically on every visit and refresh. Modern browsers can still block audible autoplay; when that happens, the site starts it on the visitor’s first interaction anywhere on the page.

@@ -103,8 +103,8 @@ body:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradi
 .header-soundtrack .music-copy small{font-size:7px}
 .header-soundtrack .music-copy strong{font-size:10px}
 .site-header .nav{margin-left:0}
-.studio-credit{color:#f2e8d2;text-decoration:underline;text-decoration-color:rgba(211,33,39,.65);text-underline-offset:3px}
-.studio-credit:hover{color:#fff;text-decoration-color:var(--red)}
+.studio-credit{color:#f2e8d2;text-decoration:none}
+.studio-credit:hover{color:#fff;text-decoration:none}
 #soundtrackAudio{display:none}
 
 @media (min-width:1400px){

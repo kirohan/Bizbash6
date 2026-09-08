@@ -35,10 +35,14 @@ const observer = new IntersectionObserver(entries => {
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
 // BizBash soundtrack — user-provided local audio asset.
-// Browsers require a user gesture before audio playback, so this starts only when the visitor presses the header control.
+// Autoplay is requested immediately on every visit/refresh. Some browsers may still
+// block audible autoplay by policy; in that case playback begins on the visitor's
+// first interaction anywhere on the page.
 const musicToggle = document.getElementById('musicToggle');
 const soundtrackAudio = document.getElementById('soundtrackAudio');
 let soundtrackPlaying = false;
+let userPausedSoundtrack = false;
+let autoplayFallbackArmed = false;
 
 function updateSoundtrackButton(playing){
   soundtrackPlaying = playing;
@@ -50,24 +54,69 @@ function updateSoundtrackButton(playing){
   if(icon) icon.textContent = playing ? 'Ⅱ' : '♪';
 }
 
-async function playSoundtrack(){
-  if(!soundtrackAudio) return;
+function removeAutoplayFallback(){
+  if(!autoplayFallbackArmed) return;
+  autoplayFallbackArmed = false;
+  ['pointerdown','touchstart','keydown'].forEach(type =>
+    document.removeEventListener(type, unlockAutoplay, true)
+  );
+}
+
+async function playSoundtrack({fromAutoplay = false} = {}){
+  if(!soundtrackAudio) return false;
   soundtrackAudio.volume = 0.38;
   try{
     await soundtrackAudio.play();
+    userPausedSoundtrack = false;
     updateSoundtrackButton(true);
+    removeAutoplayFallback();
+    return true;
   }catch(err){
     updateSoundtrackButton(false);
-    console.warn('Soundtrack playback was blocked by the browser.', err);
+    if(fromAutoplay) armAutoplayFallback();
+    console.warn('Audible autoplay was blocked by the browser; waiting for the first page interaction.', err);
+    return false;
   }
 }
 
 function pauseSoundtrack(){
   if(!soundtrackAudio) return;
+  userPausedSoundtrack = true;
+  removeAutoplayFallback();
   soundtrackAudio.pause();
   updateSoundtrackButton(false);
 }
 
-musicToggle?.addEventListener('click', () => soundtrackPlaying ? pauseSoundtrack() : playSoundtrack());
+async function unlockAutoplay(){
+  if(userPausedSoundtrack || soundtrackPlaying) return;
+  await playSoundtrack();
+}
+
+function armAutoplayFallback(){
+  if(autoplayFallbackArmed || userPausedSoundtrack || soundtrackPlaying) return;
+  autoplayFallbackArmed = true;
+  ['pointerdown','touchstart','keydown'].forEach(type =>
+    document.addEventListener(type, unlockAutoplay, {capture:true, once:true})
+  );
+}
+
+function attemptAutoplay(){
+  if(!soundtrackAudio || userPausedSoundtrack || soundtrackPlaying) return;
+  playSoundtrack({fromAutoplay:true});
+}
+
+musicToggle?.addEventListener('click', () => {
+  if(soundtrackPlaying) pauseSoundtrack();
+  else {
+    userPausedSoundtrack = false;
+    playSoundtrack();
+  }
+});
+
 soundtrackAudio?.addEventListener('play', () => updateSoundtrackButton(true));
 soundtrackAudio?.addEventListener('pause', () => updateSoundtrackButton(false));
+
+// Try as soon as the document is ready, and again when restored/revisited via bfcache.
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attemptAutoplay, {once:true});
+else attemptAutoplay();
+window.addEventListener('pageshow', attemptAutoplay);
