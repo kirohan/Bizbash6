@@ -13,7 +13,7 @@ A premium detective-themed one-page website concept for **BizBash 6.0**, the sig
 - First round and final round guideline sections
 - Direct registration CTA and official QR
 - Downloadable official rulebook
-- Single YouTube-hosted background soundtrack with a user-controlled play/stop toggle
+- User-provided local MP3 soundtrack with a user-controlled play/pause control in the header
 - Transparent KUET Career Club logo treatment
 - No framework or build step — ready for GitHub Pages
 
@@ -42,7 +42,7 @@ The website content is based on the official BizBash 6.0 rulebook, including eve
 
 ## Credit
 
-**Design & Development Credit: Bad Time Studio**
+**Design & Development Credit: [Bad Time Studio](https://www.facebook.com/BadTimeStudio)**
 
 Event organized by **KUET Career Club**.
 
@@ -51,3 +51,10 @@ Event organized by **KUET Career Club**.
 
 - **President:** Abdur Raheem
 - **HR / Contact:** Md. Muhit Islam Munshi Tasbi
+
+
+## Brand assets
+
+- KCC logo is used with transparency.
+- The browser favicon is generated from the KCC emblem.
+- Soundtrack file: `assets/bizbash-soundtrack.mp3`.

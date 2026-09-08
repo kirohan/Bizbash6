@@ -34,38 +34,40 @@ const observer = new IntersectionObserver(entries => {
 },{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
-// BizBash soundtrack — the only audio source used by this site.
-// Browsers block unsolicited audio, so playback begins only after the visitor presses the control.
+// BizBash soundtrack — user-provided local audio asset.
+// Browsers require a user gesture before audio playback, so this starts only when the visitor presses the header control.
 const musicToggle = document.getElementById('musicToggle');
-const youtubeAudio = document.getElementById('youtubeAudio');
-const soundtrackId = 'Qm-eDEx5qaQ';
+const soundtrackAudio = document.getElementById('soundtrackAudio');
 let soundtrackPlaying = false;
 
-function startSoundtrack(){
-  if (!youtubeAudio || soundtrackPlaying) return;
-  const iframe = document.createElement('iframe');
-  iframe.width = '1';
-  iframe.height = '1';
-  iframe.title = 'BizBash 6.0 soundtrack';
-  iframe.allow = 'autoplay; encrypted-media';
-  iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-  iframe.src = `https://www.youtube.com/embed/${soundtrackId}?autoplay=1&loop=1&playlist=${soundtrackId}&controls=0&disablekb=1&fs=0&playsinline=1&rel=0`;
-  youtubeAudio.replaceChildren(iframe);
-  soundtrackPlaying = true;
-  musicToggle?.setAttribute('aria-pressed','true');
-  musicToggle?.setAttribute('aria-label','Stop BizBash soundtrack');
+function updateSoundtrackButton(playing){
+  soundtrackPlaying = playing;
+  musicToggle?.setAttribute('aria-pressed', String(playing));
+  musicToggle?.setAttribute('aria-label', playing ? 'Pause BizBash soundtrack' : 'Play BizBash soundtrack');
   const label = musicToggle?.querySelector('.music-copy strong');
-  if(label) label.textContent = 'STOP MUSIC';
+  if(label) label.textContent = playing ? 'PAUSE MUSIC' : 'PLAY MUSIC';
+  const icon = musicToggle?.querySelector('.music-icon');
+  if(icon) icon.textContent = playing ? 'Ⅱ' : '♪';
 }
 
-function stopSoundtrack(){
-  if (!youtubeAudio) return;
-  youtubeAudio.replaceChildren();
-  soundtrackPlaying = false;
-  musicToggle?.setAttribute('aria-pressed','false');
-  musicToggle?.setAttribute('aria-label','Play BizBash soundtrack');
-  const label = musicToggle?.querySelector('.music-copy strong');
-  if(label) label.textContent = 'PLAY MUSIC';
+async function playSoundtrack(){
+  if(!soundtrackAudio) return;
+  soundtrackAudio.volume = 0.38;
+  try{
+    await soundtrackAudio.play();
+    updateSoundtrackButton(true);
+  }catch(err){
+    updateSoundtrackButton(false);
+    console.warn('Soundtrack playback was blocked by the browser.', err);
+  }
 }
 
-musicToggle?.addEventListener('click', () => soundtrackPlaying ? stopSoundtrack() : startSoundtrack());
+function pauseSoundtrack(){
+  if(!soundtrackAudio) return;
+  soundtrackAudio.pause();
+  updateSoundtrackButton(false);
+}
+
+musicToggle?.addEventListener('click', () => soundtrackPlaying ? pauseSoundtrack() : playSoundtrack());
+soundtrackAudio?.addEventListener('play', () => updateSoundtrackButton(true));
+soundtrackAudio?.addEventListener('pause', () => updateSoundtrackButton(false));

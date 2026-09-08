@@ -10,7 +10,9 @@
   <meta property="og:type" content="website" />
   <meta property="og:image" content="docs/design-reference.png" />
   <title>BizBash 6.0 | KUET Career Club</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" href="assets/favicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet" />
@@ -22,6 +24,10 @@
     <a class="brand" href="#top" aria-label="BizBash 6.0 home">
       <span class="brand-biz">BizBash <b>6.0</b></span>
     </a>
+    <button class="music-toggle header-soundtrack" id="musicToggle" type="button" aria-pressed="false" aria-label="Play BizBash soundtrack">
+      <span class="music-icon" aria-hidden="true">♪</span>
+      <span class="music-copy"><small>CASE SOUNDTRACK</small><strong>PLAY MUSIC</strong></span>
+    </button>
     <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
@@ -227,14 +233,10 @@
     </div>
     <div class="footer-bottom">
       <span>© 2026 KUET Career Club · BizBash 6.0</span>
-      <span>Design &amp; Development Credit: <strong>Bad Time Studio</strong></span>
+      <span>Design &amp; Development Credit: <a class="studio-credit" href="https://www.facebook.com/BadTimeStudio" target="_blank" rel="noopener"><strong>Bad Time Studio</strong></a></span>
     </div>
   </footer>
-  <button class="music-toggle" id="musicToggle" type="button" aria-pressed="false" aria-label="Play BizBash soundtrack">
-    <span class="music-icon" aria-hidden="true">♪</span>
-    <span class="music-copy"><small>CASE SOUNDTRACK</small><strong>PLAY MUSIC</strong></span>
-  </button>
-  <div id="youtubeAudio" class="youtube-audio" aria-hidden="true"></div>
+  <audio id="soundtrackAudio" src="assets/bizbash-soundtrack.mp3" loop preload="metadata"></audio>
   <script src="script.js"></script>
 </body>
 </html>
