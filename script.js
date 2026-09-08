@@ -33,3 +33,39 @@ const observer = new IntersectionObserver(entries => {
   });
 },{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// BizBash soundtrack — the only audio source used by this site.
+// Browsers block unsolicited audio, so playback begins only after the visitor presses the control.
+const musicToggle = document.getElementById('musicToggle');
+const youtubeAudio = document.getElementById('youtubeAudio');
+const soundtrackId = 'Qm-eDEx5qaQ';
+let soundtrackPlaying = false;
+
+function startSoundtrack(){
+  if (!youtubeAudio || soundtrackPlaying) return;
+  const iframe = document.createElement('iframe');
+  iframe.width = '1';
+  iframe.height = '1';
+  iframe.title = 'BizBash 6.0 soundtrack';
+  iframe.allow = 'autoplay; encrypted-media';
+  iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+  iframe.src = `https://www.youtube.com/embed/${soundtrackId}?autoplay=1&loop=1&playlist=${soundtrackId}&controls=0&disablekb=1&fs=0&playsinline=1&rel=0`;
+  youtubeAudio.replaceChildren(iframe);
+  soundtrackPlaying = true;
+  musicToggle?.setAttribute('aria-pressed','true');
+  musicToggle?.setAttribute('aria-label','Stop BizBash soundtrack');
+  const label = musicToggle?.querySelector('.music-copy strong');
+  if(label) label.textContent = 'STOP MUSIC';
+}
+
+function stopSoundtrack(){
+  if (!youtubeAudio) return;
+  youtubeAudio.replaceChildren();
+  soundtrackPlaying = false;
+  musicToggle?.setAttribute('aria-pressed','false');
+  musicToggle?.setAttribute('aria-label','Play BizBash soundtrack');
+  const label = musicToggle?.querySelector('.music-copy strong');
+  if(label) label.textContent = 'PLAY MUSIC';
+}
+
+musicToggle?.addEventListener('click', () => soundtrackPlaying ? stopSoundtrack() : startSoundtrack());

@@ -6,13 +6,15 @@ A premium detective-themed one-page website concept for **BizBash 6.0**, the sig
 
 ## Highlights
 
-- Responsive, mobile-first static site
+- Responsive static site with dedicated desktop and mobile layouts
 - Detective / investigation-board visual language matching the event campaign
 - Live registration deadline countdown
 - Official event timeline and rules
 - First round and final round guideline sections
 - Direct registration CTA and official QR
 - Downloadable official rulebook
+- Single YouTube-hosted background soundtrack with a user-controlled play/stop toggle
+- Transparent KUET Career Club logo treatment
 - No framework or build step — ready for GitHub Pages
 
 ## Run locally
@@ -43,3 +45,9 @@ The website content is based on the official BizBash 6.0 rulebook, including eve
 **Design & Development Credit: Bad Time Studio**
 
 Event organized by **KUET Career Club**.
+
+
+## Current committee references
+
+- **President:** Abdur Raheem
+- **HR / Contact:** Md. Muhit Islam Munshi Tasbi
